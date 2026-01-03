@@ -229,35 +229,46 @@ def OFAT_optimize(base_config_path, output_dir='Results/OFAT'):
     
     # Simpan konfigurasi akhir dengan semua parameter lengkap
     final_config_path = os.path.join(output_dir, 'best_config.yaml')
+    
+    # Convert numpy types to Python native types
+    def to_python_type(val):
+        """Convert numpy/pandas types to Python native types"""
+        if hasattr(val, 'item'):  # numpy scalar
+            return val.item()
+        elif isinstance(val, (int, float, str, bool)):
+            return val
+        else:
+            return str(val)
+    
     final_cfg = {
         # Model config
         'model': model_type,
         'encoder': encoder_type,
-        'base_c': base_cfg.get('base_c', 32),
+        'base_c': int(base_cfg.get('base_c', 32)),
         
-        # Best hyperparameters from OFAT
-        'optimizer': best_params['optimizer'],
-        'batch_size': best_params['batch_size'],
-        'lr': best_params['lr'],
-        'epochs': best_params['epochs'],
+        # Best hyperparameters from OFAT (convert to native Python types)
+        'optimizer': str(best_params['optimizer']),
+        'batch_size': int(to_python_type(best_params['batch_size'])),
+        'lr': float(to_python_type(best_params['lr'])),
+        'epochs': int(to_python_type(best_params['epochs'])),
         
         # Loss configuration
         'loss_type': base_cfg.get('loss_type', 'bce_dice'),
-        'focal_alpha': base_cfg.get('focal_alpha', 0.25),
-        'focal_gamma': base_cfg.get('focal_gamma', 2.0),
-        'bce_dice_weight': base_cfg.get('bce_dice_weight', 0.5),
+        'focal_alpha': float(base_cfg.get('focal_alpha', 0.25)),
+        'focal_gamma': float(base_cfg.get('focal_gamma', 2.0)),
+        'bce_dice_weight': float(base_cfg.get('bce_dice_weight', 0.5)),
         
         # Scheduler configuration
-        'use_scheduler': base_cfg.get('use_scheduler', False),
+        'use_scheduler': bool(base_cfg.get('use_scheduler', False)),
         'scheduler_type': base_cfg.get('scheduler_type', 'cosine'),
-        'warmup_epochs': base_cfg.get('warmup_epochs', 5),
+        'warmup_epochs': int(base_cfg.get('warmup_epochs', 5)),
         
         # Other training config
-        'accum_steps': base_cfg.get('accum_steps', 1),
-        'use_amp': base_cfg.get('use_amp', True),
+        'accum_steps': int(base_cfg.get('accum_steps', 1)),
+        'use_amp': bool(base_cfg.get('use_amp', True)),
         
         # Performance
-        'best_val_iou': round(best_val_iou, 4),
+        'best_val_iou': round(float(best_val_iou), 4),
         
         # Paths
         'split_json': base_cfg.get('split_json'),

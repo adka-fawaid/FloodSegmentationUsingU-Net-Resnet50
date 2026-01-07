@@ -459,7 +459,7 @@ If you use this code in your research, please cite:
 
 ```bibtex
 @misc{unet_flood_ofat2026,
-  author = {Your Name},
+  author = {Moh Adzka Fawaid},
   title = {U-Net Flood Segmentation with OFAT Hyperparameter Optimization},
   year = {2026},
   publisher = {GitHub},
